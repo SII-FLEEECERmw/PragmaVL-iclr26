@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Primary Meta Tags -->
+  <!-- PRAGMA-VL Meta Tags -->
+  <meta name="title" content="PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs - Ming Wen, Kun Yang, et al.">
+  <meta name="description" content="Pragma-VL enables MLLMs to pragmatically arbitrate between safety and helpfulness through risk-aware pre-alignment and context-dependent reward modeling, achieving 5-20% improvement on safety benchmarks while preserving general capabilities.">
+  <meta name="keywords" content="multimodal large language models, safety alignment, risk perception, reinforcement learning, safety-helpfulness trade-off, visual risk awareness, contextual arbitration">
+  <meta name="author" content="Ming Wen, Kun Yang, Xin Chen, Jingyu Zhang, Dingding Han, Shiwen Cui, Yuedong Xu">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Fudan University & Ant Group">
+  <meta property="og:title" content="PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs">
+  <meta property="og:description" content="Pragma-VL enables MLLMs to pragmatically arbitrate between safety and helpfulness through risk-aware pre-alignment and context-dependent reward modeling.">
+  <meta property="og:url" content="https://SII-FLEEECERmw.github.io/PragmaVL-iclr26/">
+  <meta property="og:image" content="https://SII-FLEEECERmw.github.io/PragmaVL-iclr26//static/images/social_preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="PRAGMA-VL - Research Preview">
+  <meta property="article:published_time" content="2026-01-01T00:00:00.000Z">
+  <meta property="article:author" content="Ming Wen">
+  <meta property="article:section" content="Research">
+  <meta property="article:tag" content="multimodal safety">
+  <meta property="article:tag" content="MLLM alignment">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Fudan_Univ">
+  <meta name="twitter:creator" content="@mingwen_ai">
+  <meta name="twitter:title" content="PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs">
+  <meta name="twitter:description" content="Pragma-VL enables MLLMs to pragmatically arbitrate between safety and helpfulness through risk-aware pre-alignment and context-dependent reward modeling.">
+  <meta name="twitter:image" content="https://SII-FLEEECERmw.github.io/PragmaVL-iclr26//static/images/social_preview.png">
+  <meta name="twitter:image:alt" content="PRAGMA-VL - Research Preview">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs">
+  <meta name="citation_author" content="Wen, Ming">
+  <meta name="citation_author" content="Yang, Kun">
+  <meta name="citation_author" content="Chen, Xin">
+  <meta name="citation_author" content="Zhang, Jingyu">
+  <meta name="citation_author" content="Han, Dingding">
+  <meta name="citation_author" content="Cui, Shiwen">
+  <meta name="citation_author" content="Xu, Yuedong">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_conference_title" content="International Conference on Learning Representations">
+  <meta name="citation_pdf_url" content="/Users/mingwenn/Desktop/iclr/iclr_cam.pdf">
+  
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="msapplication-TileColor" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://documentcloud.adobe.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+
+  <!-- PRAGMA-VL Paper -->
+  <title>PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs - Ming Wen, Kun Yang, et al. | ICLR 2026</title>
+    
+  <!-- Critical CSS - Load synchronously -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  
+  <!-- Fallback for browsers that don't support preload -->
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+  
+  <!-- Fonts - Optimized loading -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Defer non-critical JavaScript -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+  
+  <!-- Structured Data for Academic Papers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "PAPER_TITLE",
+    "description": "BRIEF_DESCRIPTION_OF_YOUR_RESEARCH_CONTRIBUTION_AND_FINDINGS",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "FIRST_AUTHOR_NAME",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "INSTITUTION_NAME"
+        }
+      },
+      {
+        "@type": "Person",
+        "name": "SECOND_AUTHOR_NAME",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "INSTITUTION_NAME"
+        }
+      }
+    ],
+    "datePublished": "2024-01-01",
+    "publisher": {
+      "@type": "Organization",
+      "name": "CONFERENCE_OR_JOURNAL_NAME"
+    },
+    "url": "https://YOUR_DOMAIN.com/YOUR_PROJECT_PAGE",
+    "image": "https://YOUR_DOMAIN.com/static/images/social_preview.png",
+    "keywords": ["KEYWORD1", "KEYWORD2", "KEYWORD3", "machine learning", "computer vision"],
+    "abstract": "FULL_ABSTRACT_TEXT_HERE",
+    "citation": "BIBTEX_CITATION_HERE",
+    "isAccessibleForFree": true,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "mainEntity": {
+      "@type": "WebPage",
+      "@id": "https://YOUR_DOMAIN.com/YOUR_PROJECT_PAGE"
+    },
+    "about": [
+      {
+        "@type": "Thing",
+        "name": "RESEARCH_AREA_1"
+      },
+      {
+        "@type": "Thing", 
+        "name": "RESEARCH_AREA_2"
+      }
+    ]
+  }
+  </script>
+  
+  <!-- Website/Organization Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "INSTITUTION_OR_LAB_NAME",
+    "url": "https://YOUR_INSTITUTION_WEBSITE.com",
+    "logo": "https://YOUR_DOMAIN.com/static/images/favicon.ico",
+    "sameAs": [
+      "https://twitter.com/YOUR_TWITTER_HANDLE",
+      "https://github.com/YOUR_GITHUB_USERNAME"
+    ]
+  }
+  </script>
+</head>
+<body>
+
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <!-- PRAGMA-VL Paper Title -->
+            <h1 class="title is-1 publication-title">PRAGMA-VL: Towards a Pragmatic Arbitration of Safety and Helpfulness in MLLMs</h1>
+            <div class="is-size-5 publication-authors">
+              <!-- PRAGMA-VL Authors -->
+              <span class="author-block">
+                <a href="mailto:mwen23@m.fudan.edu.cn" target="_blank">Ming Wen</a><sup>1,2,3</sup>,</span>
+              <span class="author-block">
+                <a href="mailto:kunyang20@zju.edu.cn" target="_blank">Kun Yang</a><sup>4,3</sup>,</span>
+              <span class="author-block">
+                <a href="#" target="_blank">Xin Chen</a><sup>5</sup>,</span>
+              <span class="author-block">
+                <a href="#" target="_blank">Jingyu Zhang</a><sup>3</sup>,</span>
+              <span class="author-block">
+                <a href="#" target="_blank">Dingding Han</a><sup>1</sup>,</span>
+              <span class="author-block">
+                <a href="#" target="_blank">Shiwen Cui</a><sup>3</sup>,</span>
+              <span class="author-block">
+                <a href="mailto:ydxu@fudan.edu.cn" target="_blank">Yuedong Xu</a><sup>1,6,*</sup>
+              </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <!-- PRAGMA-VL Institutions -->
+              <span class="author-block">
+                <sup>1</sup>Fudan Univ, <sup>2</sup>Shanghai Innovation Inst, <sup>3</sup>Ant Group, <sup>4</sup>ZJU, <sup>5</sup>UCLA, <sup>6</sup>Shenzhen Loop Area Inst, <sup>*</sup>Corresponding Author
+              </span>
+              <span class="author-block">ICLR 2026</span>
+            </div>
+
+                  <div class="column has-text-centered">
+                    <div class="publication-links">
+                    <!-- PRAGMA-VL Paper Links -->
+                       <span class="link-block">
+                         <a href="https://openreview.net/forum?id=KwWYvt547M" target="_blank"
+                         class="external-link button is-normal is-rounded is-dark">
+                         <span class="icon">
+                           <i class="fas fa-file-pdf"></i>
+                         </span>
+                         <span>Paper (OpenReview)</span>
+                       </a>
+                     </span>
+
+                     <!-- Pragma-Safe Dataset -->
+                     <span class="link-block">
+                       <a href="https://huggingface.co/datasets/pragma-vl/pragma-safe" target="_blank"
+                       class="external-link button is-normal is-rounded is-dark">
+                       <span class="icon">
+                         <img src="static/images/hf-logo.svg" alt="Hugging Face" style="height: 1em; width: auto;">
+                       </span>
+                       <span>Dataset(Comming Soon)</span>
+                     </a>
+                   </span>
+
+                   <!-- GitHub (placeholder - contact authors for actual repo) -->
+                   <span class="link-block">
+                     <a href="https://github.com/SII-FLEEECERmw/Pragma-VL" target="_blank"
+                     class="external-link button is-normal is-rounded is-dark">
+                     <span class="icon">
+                       <i class="fab fa-github"></i>
+                     </span>
+                     <span>Code</span>
+                   </a>
+                 </span>
+
+                 <!-- arXiv (placeholder - contact authors for actual link) -->
+                 <span class="link-block">
+                   <a href="mailto:ydxu@fudan.edu.cn" target="_blank"
+                   class="external-link button is-normal is-rounded is-dark">
+                   <span class="icon">
+                     <i class="ai ai-arxiv"></i>
+                   </span>
+                   <span>arXiv</span>
+                 </a>
+               </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Introduction</h2>
+        <div class="content has-text-justified">
+          <!-- PRAGMA-VL Abstract -->
+          <p>
+            Multimodal Large Language Models (MLLMs) pose critical safety challenges, as they are susceptible not only to adversarial attacks such as jailbreaking but also to inadvertently generating harmful content for benign users. While internal safety alignment via Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) is a primary mitigation strategy, current methods often face a safety-utility trade-off: they either refuse benign queries out of excessive caution or overlook latent risks in cross-modal interactions.
+          </p>
+          <p>
+            To resolve this, we introduce Pragma-VL, an end-to-end alignment algorithm that enables MLLMs to pragmatically arbitrate between safety and helpfulness. First, we enhance visual risk perception with a novel cold-start SFT stage. This is achieved by applying risk-aware clustering to the visual encoder and using an interleaved dataset of risk descriptions and high-quality data. Second, we introduce a theoretically-guaranteed reward model that leverages synergistic learning. We train it with a novel data augmentation method that assigns dynamic weights based on the queries, enabling contextual arbitration between safety and helpfulness.
+          </p>
+          <p>
+            Extensive experiments show that Pragma-VL effectively balances safety and helpfulness, outperforming baselines by 5% to 20% on most multimodal safety benchmarks while preserving its general capabilities in areas such as mathematics and knowledge reasoning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End paper abstract -->
+
+
+<!-- Motivation Image -->
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <figure class="image">
+            <img src="static/images/motivation.png" alt="PRAGMA-VL Motivation: Safety-Helpfulness Trade-off in MLLMs" loading="lazy" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);"/>
+            <figcaption class="has-text-centered mt-4">
+              <h3 class="subtitle is-5 has-text-weight-semibold">Figure 1: Safety-Helpfulness Trade-off in Multimodal Large Language Models</h3>
+              <p class="has-text-grey">Current MLLMs face challenges in balancing safety and helpfulness, often refusing benign queries or overlooking latent risks.</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Motivation Image -->
+
+<!-- Dataset Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Dataset</h2>
+        <div class="content has-text-justified">
+          <p>
+            We introduce Pragma-Safe, a comprehensive multimodal safety dataset designed to evaluate and improve safety alignment in MLLMs. The dataset contains diverse risk scenarios with carefully annotated safety and helpfulness labels.
+          </p>
+        </div>
+        <figure class="image mb-6">
+          <img src="static/images/data&overview.png" alt="Pragma-Safe Dataset Overview" loading="lazy" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);"/>
+          <figcaption class="has-text-centered mt-4">
+            <h3 class="subtitle is-5 has-text-weight-semibold">Figure 2: Pragma-Safe Dataset Construction Overview</h3>
+          </figcaption>
+        </figure>
+        
+        <h4 class="title is-4">Dataset Construction Process</h4>
+        <div class="content">
+          <ol>
+            <li><strong>Multi-Dimensional Annotation:</strong> We generate diverse responses using six MLLMs and employ GPT-4o to assign granular helpfulness, harmlessness, and trade-off weight labels. </li>
+            <li><strong>Consensus-Driven Aggregation:</strong> Multiple rounds of position annotations are processed via majority voting to establish stable baseline scores and minimize individual rater bias.</li>
+            <li><strong>Variance-Aware Weight Refinement:</strong> A stochastic adjustment mechanism refines weight vectors based on rater consensus, preventing overfitting and ensuring robust context-dependent arbitration.</li>
+          </ol>
+        </div>
+
+        <!-- Dataset Carousel -->
+        <div class="columns is-multiline">
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/data_ana.png" alt="Data Analysis Results" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Dataset Statistics and Distribution</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/data_table.jpg" alt="Dataset Table" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Dataset Composition Table</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/example.png" alt="Dataset Examples" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Risk Detection Examples</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-6">
+            <figure class="image">
+              <img src="static/images/example_help.png" alt="Helpfulness Examples" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Helpfulness Evaluation Examples</p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Dataset Section -->
+
+<!-- Algorithm Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Algorithm</h2>
+        <div class="content has-text-justified">
+          <p>
+            Pragma-VL employs a two-stage alignment approach: (1) Risk-aware pre-alignment via cold-start SFT with visual risk clustering, and (2) Context-dependent reward modeling with synergistic learning for dynamic safety-helpfulness arbitration.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="static/images/algorithm_upd.png" alt="Pragma-VL Algorithm Overview" loading="lazy" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);"/>
+          <figcaption class="has-text-centered mt-4">
+            <h3 class="subtitle is-5 has-text-weight-semibold">Figure 3: Pragma-VL Algorithm Architecture</h3>
+            <p class="has-text-grey">End-to-end alignment with risk-aware pre-training and contextual reward modeling.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Algorithm Section -->
+
+<!-- Experiment Results Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <h2 class="title is-3">Experiment Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Pragma-VL demonstrates significant improvements across multiple multimodal safety benchmarks while maintaining general capabilities. Our method achieves 5-20% improvement in safety metrics compared to baselines.
+          </p>
+        </div>
+        
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <figure class="image">
+              <img src="static/images/exp_res1.jpg" alt="Experiment Results Table" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Quantitative Results on Safety Benchmarks</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-4">
+            <figure class="image">
+              <img src="static/images/demo1.png" alt="Demo 1" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Safety Evaluation Demo</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-4">
+            <figure class="image">
+              <img src="static/images/demo2.png" alt="Demo 2" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Helpfulness Assessment</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div class="column is-4">
+            <figure class="image">
+              <img src="static/images/demo5.png" alt="Demo 5" loading="lazy" style="border-radius: 8px;"/>
+              <figcaption class="has-text-centered mt-2">
+                <p class="is-size-7 has-text-grey">Comparative Analysis</p>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Experiment Results Section -->
+
+
+<!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@inproceedings{
+wen2026pragmavl,
+title={Pragma-{VL}: Towards a Pragmatic Arbitration of Safety and Helpfulness in {MLLM}s},
+author={Ming Wen and Kun Yang and Xin Chen and Jingyu Zhang and DINGDING HAN and shiwen cui and Yuedong Xu},
+booktitle={The Fourteenth International Conference on Learning Representations},
+year={2026},
+url={https://openreview.net/forum?id=KwWYvt547M}
+}</code></pre>
+    </div>
+</section>
+<!--End BibTex citation -->
+
+
+  <footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+
+          <p>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a> which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+            You are free to borrow the source code of this website, we just ask that you link back to this page in the footer. <br> This website is licensed under a <a rel="license"  href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Statcounter tracking code -->
+  
+<!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+    <!-- End of Statcounter Code -->
+
+  </body>
+  </html>
